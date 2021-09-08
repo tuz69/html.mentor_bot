@@ -1,50 +1,10 @@
 import telebot
 import config
-import sqlite3
-import happy
 from random import choice
 
 from telebot import types
 
 bot = telebot.TeleBot(config.TOKEN)
-
-
-
-@bot.message_handler(commands=['start'])
-def id_add(message):
-    connect = sqlite3.connect('users.db')
-    cursor = connect.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS birthday_users(
-        id INTEGER,
-        birthday TEXT
-    )''')
-    connect.commit()
-
-    cursor.execute(
-        f"SELECT id FROM birthday_users WHERE id = {message.chat.id}")
-    data = cursor.fetchone()
-    if data is None:
-        user_info = [message.chat.id, '[]']
-        cursor.execute("INSERT INTO birthday_users VALUES(?, ?);", user_info)
-    connect.commit()
-    connect.close()
-
-
-@bot.message_handler(content_types=['text'])
-def date_add(message):
-    connect = sqlite3.connect('users.db')
-    cursor = connect.cursor()
-    cursor.execute(
-        f"SELECT birthday FROM birthday_users WHERE id = {message.chat.id}")
-    user_date = eval(cursor.fetchall()[0][0])
-    # print(user_info)
-    # print(type(user_info))
-    user_date.append((message.text))
-    cursor.execute(f"DELETE FROM birthday_users WHERE id = {message.chat.id}")
-    user_info = [message.chat.id, str(user_date)]
-    cursor.execute("INSERT INTO birthday_users VALUES(?, ?);", user_info)
-    connect.commit()
-    connect.close()
 
 
 
@@ -67,21 +27,34 @@ def greeting(message):
 @bot.message_handler(commands=["help"])
 def help(message):
    bot.send_message(message.chat.id, f"""
-   Привет тут короче будет что-то о 
-   developer - 
-   designer - 
-   Кто-тут такой Герман)
-   Даня чёрт, но наш чёрт)
-   GG WP
+   Привет, человек)
+   Я бот создан для этого чата)
+   Мой создатель Eduard  👽
+   Если я буду себя как-то странно вести - пишите ему (Описывайте поведение и приложите скрины)
    
+    А по поводу всех команд и их значения вы можете узнать по команде /commands 
     """)
 #############################################################
-
+#В имя надо будет запихнуть ссылку на мой акк
 ##########################################     GOOGLE :-)      ##########################################
 
 @bot.message_handler(commands = ["google"])
 def google(message):
    bot.send_sticker(message.chat.id, choice(stickers))
+#########################################################################################################
+
+##########################################     Commands :)      ##########################################
+
+@bot.message_handler(commands = ["commands"])
+def commands(message):
+    bot.send_message(message.chat.id, f"""
+    Доступны такие команды:
+    /help - Помощь и основная инфа
+    /hb - День рождение (Команда доступна ток для developer и designer
+    /start - Что-то будет хз ещё
+    /useful - Ссылка на что-то полезное например на гугл диск Дани
+    СПАМ ЛЮБЫМИ КОМАНДАМИ ЗАПРЕЩЁН!  
+     """)
 #########################################################################################################
 
 
